@@ -16,7 +16,6 @@ const ProductController = (function () { //Immediate Function
 
     const data = {
         products: [],
-
         selectedProduct: null,
         totalPrice: 0
     }
@@ -42,6 +41,17 @@ const ProductController = (function () { //Immediate Function
             const newProduct = new Product(id, name, parseFloat(price));
             data.products.push(newProduct);
             return newProduct;
+        },
+
+        getTotal : function(){
+            let total = 0;
+
+            data.products.forEach(function(item){
+                total += item.price;
+            });
+
+            data.totalPrice = total;
+            return data.totalPrice;
         }
     }
 
@@ -57,7 +67,9 @@ const UIController = (function () {
         addButton : ".addBtn",
         productName : "#productName",
         productPrice : "#productPrice",
-        productCard : "#productCard"
+        productCard : "#productCard",
+        totalTl : "#totalTl",
+        totalDolar : "#totalDolar"
     }
 
     return {
@@ -92,7 +104,7 @@ const UIController = (function () {
             <tr>
             <td>${prd.id}</td>
             <td>${prd.name}</td>
-            <td>${prd.price}</td>
+            <td>${prd.price} $</td>
             <td class="text-right">
                 <button type="submit" class="btn btn-warning btn-sm">
                     <i class="far fa-edit"></i>
@@ -112,6 +124,11 @@ const UIController = (function () {
 
         hideCard : function(){
             document.querySelector(Selectors.productCard).style.display = "none";
+        },
+
+        showTotal : function(total){
+            document.querySelector(Selectors.totalDolar).textContent = total;
+            document.querySelector(Selectors.totalTl).textContent = total * 8.11;
         }
 
     }
@@ -144,6 +161,12 @@ const App = (function (ProductCtrl, UICtrl) {
 
             //add product to list
             UIController.addProduct(newProduct);
+
+            //get total
+            const total = ProductController.getTotal();
+            
+            //show on ui
+            UIController.showTotal(total);
 
             //clear inputs
             UIController.clearInputs();
