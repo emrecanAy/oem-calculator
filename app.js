@@ -79,6 +79,14 @@ const ProductController = (function () { //Immediate Function
 
         },
 
+        deleteProduct : function(product){
+            data.products.forEach(function(prd, index){
+                if(prd.id == product.id){
+                    data.products.splice(index, 1);
+                }
+            });
+        },
+
         getTotal : function(){
             let total = 0;
 
@@ -199,6 +207,15 @@ const UIController = (function () {
             document.querySelector(Selectors.productPrice).value = selectedProduct.price;
         },
 
+        deleteProduct: function(){
+            let items = document.querySelectorAll(Selectors.productListItems);
+            items.forEach(function(item){
+                if(item.classList.contains("bg-warning")){
+                    item.remove();
+                }
+            });
+        },
+
         addingState : function(item){
 
             UIController.clearWarnings();
@@ -242,8 +259,10 @@ const App = (function (ProductCtrl, UICtrl) {
         // edit product submit
         document.querySelector(UISelectors.updateButton).addEventListener("click", productEditSubmit);
 
-        // cacel button click
+        // cancel button click
         document.querySelector(UISelectors.cancelButton).addEventListener("click", cancelUpdate);
+    
+        document.querySelector(UISelectors.deleteButton).addEventListener("click", deleteProductSubmit);
     }
 
     const productAddSubmit = function(e){
@@ -288,6 +307,8 @@ const App = (function (ProductCtrl, UICtrl) {
             // set current product
             ProductCtrl.setCurrentProduct(product);
 
+            UIController.clearWarnings();
+
             // add product to form
             UICtrl.addProductToForm();
 
@@ -327,6 +348,32 @@ const App = (function (ProductCtrl, UICtrl) {
 
         UIController.addingState();
         UIController.clearWarnings();
+
+        e.preventDefault();
+    }
+
+    const deleteProductSubmit = function(e){
+        
+        // get selected product
+        const selectedProduct = ProductCtrl.getCurrentProduct();
+
+        // delete product
+        ProductCtrl.deleteProduct(selectedProduct);
+
+        // delete ui
+        UICtrl.deleteProduct();
+
+        // get total
+        const total = ProductCtrl.getTotal();
+
+        //show total
+        UICtrl.showTotal(total);
+
+        UICtrl.addingState();
+
+        if(total == 0){
+            UICtrl.hideCard();
+        }
 
         e.preventDefault();
     }
